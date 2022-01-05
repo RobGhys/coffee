@@ -32,3 +32,42 @@ func showQuantities(nbCups int) {
 	fmt.Println(qMilk, " ml of milk")
 	fmt.Println(qCoffeeBeans, " g of coffee beans")
 }
+
+func availableQ() {
+	// Get quantities from user
+	var qWater, qMilk, qBeans, qCupsNeeded int
+	fmt.Println("Write how many ml of water the coffee machine has:")
+	fmt.Scan(&qWater)
+	fmt.Println("Write how many ml of milk the coffee machine has:")
+	fmt.Scan(&qMilk)
+	fmt.Println("Write how many grams of coffee beans the coffee machine has:")
+	fmt.Scan(&qBeans)
+	fmt.Println("Write how many cups of coffee you will need:")
+	fmt.Scan(&qCupsNeeded)
+
+	var nbrCupsAvailable int = computeNbCupsAvailable(qWater, qMilk, qBeans)
+	//fmt.Printf("I can make %d cups", nbrCupsAvailable)
+
+	fmt.Println(giveAnswer(qCupsNeeded, nbrCupsAvailable))
+}
+
+func giveAnswer(needed int, available int) string {
+	if needed == available {
+		return "Yes, I can make that amount of coffee"
+	} else if needed > available {
+		return fmt.Sprintf("%s %d %s", "No, I can make only ", available, " cups of coffee")
+	} else {
+		return fmt.Sprintf("%s %d %s", "Yes, I can make that amount of coffee (and even ", available-needed, " more than that)")
+	}
+
+}
+
+func computeNbCupsAvailable(qWater int, qMilk int, qBeans int) int {
+	var requiredQWater, requiredQMilk, requiredQBeans int = 200, 50, 15
+
+	if qWater < requiredQWater || qMilk < requiredQMilk || qBeans < requiredQBeans {
+		return 0
+	} else {
+		return 1 + computeNbCupsAvailable(qWater-requiredQWater, qMilk-requiredQMilk, qBeans-requiredQBeans)
+	}
+}
