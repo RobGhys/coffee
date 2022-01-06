@@ -3,33 +3,39 @@ package main
 import "fmt"
 
 func start(qWater *int, qMilk *int, qBeans *int, qCups *int, money *int) {
-	showRemainingQ(qWater, qMilk, qBeans, qCups, money)
 	doAction(qWater, qMilk, qBeans, qCups, money)
 }
 
 func doAction(qWater *int, qMilk *int, qBeans *int, qCups *int, money *int) {
 	// Prompt the user
-	var userAction string
+	var userAction string = ""
 
-	fmt.Println("Write action (buy, fill, take):")
-	fmt.Scan(&userAction)
+	for ok := true; ok; ok = userAction != "exit" {
+		// Prompt the user
+		fmt.Println("Write action (buy, fill, take, remaining, exit):")
+		fmt.Scan(&userAction)
 
-	switch userAction {
-	case "buy":
-		buy(qWater, qMilk, qBeans, qCups, money)
-	case "fill":
-		fill(qWater, qMilk, qBeans, qCups, money)
-	case "take":
-		take(qWater, qMilk, qBeans, qCups, money)
-	default:
-		fmt.Println("I don't understand what you are asking me.")
+		// Switch cases
+		switch userAction {
+		case "buy":
+			buy(qWater, qMilk, qBeans, qCups, money)
+		case "fill":
+			fill(qWater, qMilk, qBeans, qCups, money)
+		case "take":
+			take(qWater, qMilk, qBeans, qCups, money)
+		case "remaining":
+			showRemainingQ(qWater, qMilk, qBeans, qCups, money)
+		case "exit":
+			// End the program
+		default:
+			fmt.Println("I don't understand what you are asking me.")
+		}
 	}
 }
 
 func take(qWater *int, qMilk *int, qBeans *int, qCups *int, money *int) {
 	fmt.Printf("I give you $ %d\n", *money)
 	*money = 0
-	showRemainingQ(qWater, qMilk, qBeans, qCups, money)
 }
 
 func fill(qWater *int, qMilk *int, qBeans *int, qCups *int, money *int) {
@@ -37,9 +43,7 @@ func fill(qWater *int, qMilk *int, qBeans *int, qCups *int, money *int) {
 
 	fmt.Println("Write how many ml of water you want to add:")
 	fmt.Scan(&addWater)
-	fmt.Println("Before: ", *qWater)
 	*qWater += addWater
-	fmt.Println("After:", *qWater)
 
 	fmt.Println("Write how many ml of milk you want to add:")
 	fmt.Scan(&addMilk)
@@ -80,18 +84,29 @@ func buy(qWater *int, qMilk *int, qBeans *int, qCups *int, money *int) {
 func buyDrink(qWater *int, qMilk *int, qBeans *int, qCups *int, money *int,
 	reqWater int, reqMilk int, reqBeans int, reqCup int, reqMoney int) {
 
-	// Decrease all amounts by the cost in ingredient of the drink
-	*qWater -= reqWater
-	*qMilk -= reqMilk
-	*qBeans -= reqBeans
-	*qCups -= reqCup
-	*money += reqMoney
+	// Check if the machine can make the drink
+	if *qWater < reqWater {
+		fmt.Println("Sorry, not enough water!")
+	} else if *qMilk < reqMilk {
+		fmt.Println("Sorry, not enough milk!")
+	} else if *qBeans < reqBeans {
+		fmt.Println("Sorry, not enough beans!")
+	} else if *qCups < reqCup {
+		fmt.Println("Sorry, not enough cups!")
+	} else {
+		// Decrease all amounts by the cost in ingredient of the drink
+		*qWater -= reqWater
+		*qMilk -= reqMilk
+		*qBeans -= reqBeans
+		*qCups -= reqCup
+		*money += reqMoney
 
-	showRemainingQ(qWater, qMilk, qBeans, qCups, money)
+		// Print success message
+		fmt.Println("I have enough resources, making you a coffee!")
+	}
 }
 
 func showRemainingQ(qWater *int, qMilk *int, qBeans *int, qCups *int, money *int) {
-
 	fmt.Println("The coffee machine has:")
 	fmt.Println(*qWater, " of water")
 	fmt.Println(*qMilk, " of milk")
